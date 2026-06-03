@@ -1,0 +1,25 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300..800;1,300..800&family=Newsreader:ital,opsz,wght@0,6..72,200..850;1,6..72,200..850&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Newsreader", Georgia, Cambria, serif;
+
+  --color-brand-primary: #154212;
+  --color-brand-primary-container: #2d5a27;
+  --color-brand-secondary: #98462d;
+  --color-brand-background: #f4f1ea;
+  --color-brand-charcoal: #191c18;
+  --color-brand-sand: #f4f1ea;       /* Base background sandbox color */
+  --color-brand-surface: #f9faf2;    /* Slightly brighter cards/navbar */
+  --color-brand-accent: #e5b23a;
+  --color-brand-outline: rgba(21, 66, 18, 0.1);
+  --color-brand-gold: #e5b23a;
+  --color-brand-blue: #216091;
+}
+
+body {
+  background-color: var(--color-brand-background);
+  color: var(--color-brand-charcoal);
+  font-family: var(--font-sans);
+}

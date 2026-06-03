@@ -1,0 +1,6 @@
+{
+  "name": "Elos Locais",
+  "description": "Uma ponte respeitosa e ética conectando o setor corporativo aos saberes de comunidades tradicionais brasileiras.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
