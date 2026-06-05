@@ -12,10 +12,11 @@ interface HeaderProps {
   onSearch: (query: string) => void;
   searchQuery: string;
   userEmail?: string;
+  userInitials?: string;
   onSignOut?: () => void;
 }
 
-export default function Header({ activeTab, setActiveTab, onSelectLeader, onSearch, searchQuery, userEmail, onSignOut }: HeaderProps) {
+export default function Header({ activeTab, setActiveTab, onSelectLeader, onSearch, searchQuery, userEmail, userInitials, onSignOut }: HeaderProps) {
   return (
     <header className="sticky top-0 z-50 bg-[#f9faf2] border-b border-brand-outline px-6 py-4 flex items-center justify-between">
       {/* Brand logo & Slogan */}
@@ -119,7 +120,7 @@ export default function Header({ activeTab, setActiveTab, onSelectLeader, onSear
           onClick={() => setActiveTab('settings')}
           className="flex items-center justify-center h-9 w-9 bg-gradient-to-br from-brand-primary to-[#1c4e1a] text-brand-sand font-serif font-black text-xs hover:border-brand-primary transition-all rounded-full border border-brand-outline cursor-pointer shadow-sm shrink-0"
         >
-          AF
+          {userInitials ?? 'EL'}
         </button>
       </div>
     </header>

@@ -17,8 +17,19 @@ import { STAKEHOLDERS } from './data';
 import { Compass, Users, MapPin, Sparkles } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
+function getInitials(value: string) {
+  return value
+    .split(' ')
+    .filter(Boolean)
+    .map((segment) => segment[0])
+    .slice(0, 2)
+    .join('')
+    .toUpperCase();
+}
+
 export default function App() {
   const [session, setSession] = useState<Session | null>(null);
+  const [userInitials, setUserInitials] = useState<string>('EL');
   const [activeTab, setActiveTab] = useState<string>('explore');
   const [selectedLeaderId, setSelectedLeaderId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -36,6 +47,12 @@ export default function App() {
 
     return () => subscription.unsubscribe();
   }, []);
+
+  useEffect(() => {
+    if (session?.user.email) {
+      setUserInitials(getInitials(session.user.email));
+    }
+  }, [session?.user.email]);
 
   if (!session) {
     return <Login />;
@@ -68,6 +85,7 @@ export default function App() {
         onSearch={setSearchQuery}
         searchQuery={searchQuery}
         userEmail={session.user.email ?? ''}
+        userInitials={userInitials}
         onSignOut={async () => {
           await supabase.auth.signOut();
         }}
@@ -210,6 +228,8 @@ export default function App() {
               <SettingsPanel 
                 userEmail={session.user.email ?? ''} 
                 userId={session.user.id}
+                onProfileLoaded={(name) => setUserInitials(getInitials(name))}
+                onProfileSaved={(name) => setUserInitials(getInitials(name))}
               />
             )}
           </motion.div>

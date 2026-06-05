@@ -11,9 +11,11 @@ import { getOrCreateUserProfile, updateUserProfile } from '../lib/profileService
 interface SettingsPanelProps {
   userEmail?: string;
   userId?: string;
+  onProfileLoaded?: (name: string) => void;
+  onProfileSaved?: (name: string) => void;
 }
 
-export default function SettingsPanel({ userEmail, userId }: SettingsPanelProps) {
+export default function SettingsPanel({ userEmail, userId, onProfileLoaded, onProfileSaved }: SettingsPanelProps) {
   // User Profile State (Self-management)
   const [userName, setUserName] = useState<string>('');
   const [userTitle, setUserTitle] = useState<string>('');
@@ -73,6 +75,7 @@ export default function SettingsPanel({ userEmail, userId }: SettingsPanelProps)
         setCompanyName(profile.company_name);
         setWebsite(profile.website);
         setCompanyDesc(profile.company_desc);
+        onProfileLoaded?.(profile.name);
       }
     } catch (error) {
       console.error('Erro ao carregar perfil:', error);
@@ -109,6 +112,7 @@ export default function SettingsPanel({ userEmail, userId }: SettingsPanelProps)
 
       if (result) {
         setSaveSuccess(true);
+        onProfileSaved?.(userName);
         setTimeout(() => setSaveSuccess(false), 3000);
       } else {
         setSaveError('Erro ao salvar alterações. Tente novamente.');
