@@ -207,7 +207,7 @@ export default function App() {
             )}
 
             {activeTab === 'settings' && (
-              <SettingsPanel />
+              <SettingsPanel userEmail={session.user.email ?? ''} />
             )}
           </motion.div>
         </AnimatePresence>

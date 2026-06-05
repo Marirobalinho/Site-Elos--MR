@@ -3,14 +3,24 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Save, Plus, ArrowUpRight, ToggleLeft, ToggleRight, ShieldAlert, Sparkles, User, Briefcase, Mail, Building, Globe, Check } from 'lucide-react';
 
-export default function SettingsPanel() {
+interface SettingsPanelProps {
+  userEmail?: string;
+}
+
+export default function SettingsPanel({ userEmail }: SettingsPanelProps) {
   // User Profile State (Self-management)
   const [userName, setUserName] = useState<string>('Ana Ferreira');
   const [userTitle, setUserTitle] = useState<string>('Coordenadora de Articulação e Impacto');
-  const [userEmail, setUserEmail] = useState<string>('ana.ferreira@eloslocais.com.br');
+  const [userEmailState, setUserEmail] = useState<string>(userEmail ?? 'ana.ferreira@eloslocais.com.br');
+
+  useEffect(() => {
+    if (userEmail) {
+      setUserEmail(userEmail);
+    }
+  }, [userEmail]);
   const [userBio, setUserBio] = useState<string>(
     'Dedicada ao mapeamento ético e fomento de parcerias com povos originários, comunidades ribeirinhas e caiçaras, assegurando a soberania de dados e o tempo sagrado de cada território.'
   );
@@ -128,7 +138,7 @@ export default function SettingsPanel() {
                 <label className="text-[10px] font-bold text-[#72796e] uppercase tracking-wider block">E-mail de Contato</label>
                 <input 
                   type="email" 
-                  value={userEmail} 
+                  value={userEmailState} 
                   onChange={(e) => setUserEmail(e.target.value)}
                   className="w-full bg-[#f9faf2] border border-[#c2c9bb] focus:border-brand-primary rounded-lg px-3 py-2 text-xs text-brand-charcoal focus:outline-none focus:ring-1 focus:ring-brand-primary/20 transition-all font-sans" 
                 />
