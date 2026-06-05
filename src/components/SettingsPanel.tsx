@@ -114,8 +114,9 @@ export default function SettingsPanel({ userEmail, userId }: SettingsPanelProps)
         setSaveError('Erro ao salvar alterações. Tente novamente.');
       }
     } catch (error) {
-      console.error('Erro ao salvar perfil:', error);
-      setSaveError('Erro ao salvar alterações. Tente novamente.');
+      const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido ao salvar';
+      console.error('Erro completo:', error);
+      setSaveError(errorMessage);
     } finally {
       setSaving(false);
     }

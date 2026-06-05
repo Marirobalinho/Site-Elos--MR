@@ -19,6 +19,8 @@ export interface UserProfile {
  */
 export async function loadUserProfile(userId: string): Promise<UserProfile | null> {
   try {
+    console.log('Carregando perfil para userId:', userId);
+    
     const { data, error } = await supabase
       .from('user_profiles')
       .select('*')
@@ -28,12 +30,26 @@ export async function loadUserProfile(userId: string): Promise<UserProfile | nul
     if (error) {
       if (error.code === 'PGRST116') {
         // Nenhum perfil encontrado - retorna null para criar um novo
+        console.log('Nenhum perfil encontrado. Será criado um novo.');
         return null;
       }
-      console.error('Erro ao carregar perfil:', error);
+      
+      console.error('Erro Supabase ao carregar perfil:', {
+        message: error.message,
+        code: error.code,
+        details: error.details,
+        hint: error.hint,
+      });
+      
+      // Erro específico: tabela não existe
+      if (error.message.includes('relation') || error.message.includes('does not exist')) {
+        console.error('ERRO: A tabela user_profiles não foi criada no Supabase');
+      }
+      
       return null;
     }
 
+    console.log('Perfil carregado com sucesso:', data);
     return data as UserProfile;
   } catch (error) {
     console.error('Erro ao carregar perfil:', error);
@@ -50,6 +66,8 @@ export async function createUserProfile(
   initialData?: Partial<UserProfile>
 ): Promise<UserProfile | null> {
   try {
+    console.log('Criando novo perfil para userId:', userId);
+    
     const { data, error } = await supabase
       .from('user_profiles')
       .insert([
@@ -70,14 +88,32 @@ export async function createUserProfile(
       .single();
 
     if (error) {
-      console.error('Erro ao criar perfil:', error);
-      return null;
+      console.error('Erro Supabase ao criar perfil:', {
+        message: error.message,
+        code: error.code,
+        details: error.details,
+        hint: error.hint,
+      });
+      
+      // Erro específico: tabela não existe
+      if (error.message.includes('relation') || error.message.includes('does not exist')) {
+        throw new Error('ERRO: A tabela user_profiles não foi criada no Supabase. Execute o SQL em SETUP_DATABASE.md');
+      }
+      
+      // Erro de RLS/Permissão
+      if (error.message.includes('permission') || error.message.includes('denied')) {
+        throw new Error('ERRO: Permissão negada. Verifique as políticas de RLS no Supabase');
+      }
+      
+      throw new Error(`Erro ao criar perfil: ${error.message}`);
     }
 
+    console.log('Perfil criado com sucesso:', data);
     return data as UserProfile;
   } catch (error) {
-    console.error('Erro ao criar perfil:', error);
-    return null;
+    const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
+    console.error('Erro ao criar perfil:', errorMessage);
+    throw error;
   }
 }
 
@@ -89,6 +125,8 @@ export async function updateUserProfile(
   updates: Partial<UserProfile>
 ): Promise<UserProfile | null> {
   try {
+    console.log('Iniciando atualização de perfil para userId:', userId);
+    
     const { data, error } = await supabase
       .from('user_profiles')
       .update({
@@ -100,14 +138,32 @@ export async function updateUserProfile(
       .single();
 
     if (error) {
-      console.error('Erro ao atualizar perfil:', error);
-      return null;
+      console.error('Erro Supabase ao atualizar perfil:', {
+        message: error.message,
+        code: error.code,
+        details: error.details,
+        hint: error.hint,
+      });
+      
+      // Erro específico: tabela não existe
+      if (error.message.includes('relation') || error.message.includes('does not exist')) {
+        throw new Error('A tabela user_profiles não foi criada no Supabase. Execute o SQL em SETUP_DATABASE.md');
+      }
+      
+      // Erro de RLS/Permissão
+      if (error.message.includes('permission') || error.message.includes('denied')) {
+        throw new Error('Permissão negada. Verifique as políticas de RLS no Supabase');
+      }
+      
+      throw new Error(`Erro ao salvar: ${error.message}`);
     }
 
+    console.log('Perfil atualizado com sucesso:', data);
     return data as UserProfile;
   } catch (error) {
-    console.error('Erro ao atualizar perfil:', error);
-    return null;
+    const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
+    console.error('Erro ao atualizar perfil:', errorMessage);
+    throw error;
   }
 }
 
