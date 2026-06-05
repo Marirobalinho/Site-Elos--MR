@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import type { Provider } from '@supabase/supabase-js';
 import { supabase } from '../lib/supabaseClient';
 
 type AuthMode = 'signIn' | 'signUp';
@@ -51,25 +50,6 @@ export default function Login() {
     }
   };
 
-  const handleOAuth = async (provider: Provider) => {
-    setLoading(true);
-    setError(null);
-    setSuccess(null);
-
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider,
-      options: {
-        redirectTo: window.location.origin,
-      },
-    });
-
-    setLoading(false);
-
-    if (error) {
-      setError(error.message);
-    }
-  };
-
   const isSignUp = mode === 'signUp';
 
   return (
@@ -102,29 +82,6 @@ export default function Login() {
               ? 'Use seu email para criar acesso à plataforma.'
               : 'Entre com seu email e senha para continuar.'}
           </p>
-        </div>
-
-        <div className="space-y-3 mb-6">
-          <button
-            type="button"
-            onClick={() => handleOAuth('google')}
-            className="flex h-12 w-full items-center justify-center gap-3 rounded-3xl border border-[#d3d8cc] bg-white text-sm font-bold text-brand-charcoal transition hover:bg-[#f4f7f0]"
-          >
-            Continuar com Google
-          </button>
-          <button
-            type="button"
-            onClick={() => handleOAuth('github')}
-            className="flex h-12 w-full items-center justify-center gap-3 rounded-3xl border border-[#d3d8cc] bg-white text-sm font-bold text-brand-charcoal transition hover:bg-[#f4f7f0]"
-          >
-            Continuar com GitHub
-          </button>
-        </div>
-
-        <div className="flex items-center justify-center gap-3 text-sm text-[#6f766d] mb-6">
-          <span className="h-px flex-1 bg-[#d9dbd1]" />
-          <span>ou</span>
-          <span className="h-px flex-1 bg-[#d9dbd1]" />
         </div>
 
         <label className="block text-sm font-semibold text-[#4b5249]">
