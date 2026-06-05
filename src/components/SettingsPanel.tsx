@@ -269,15 +269,6 @@ export default function SettingsPanel() {
                   <div className="h-full bg-brand-primary rounded-full" style={{ width: '84%' }} />
                 </div>
               </div>
-              <div>
-                <div className="flex justify-between text-[10px] uppercase font-extrabold text-brand-charcoal/65 mb-1.5 font-sans tracking-wide">
-                  <span>Espaço de Mídia (Moodboards)</span>
-                  <span>1.2 GB / 5 GB</span>
-                </div>
-                <div className="h-2 bg-[#d9dbd3] rounded-full overflow-hidden">
-                  <div className="h-full bg-brand-secondary rounded-full" style={{ width: '24%' }} />
-                </div>
-              </div>
             </div>
           </section>
 

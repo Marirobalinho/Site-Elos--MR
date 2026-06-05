@@ -73,19 +73,6 @@ export default function Header({ activeTab, setActiveTab, onSelectLeader, onSear
         >
           Impactos
         </button>
-        <button
-          onClick={() => {
-            onSelectLeader(null);
-            setActiveTab('moodboard');
-          }}
-          className={`transition-colors duration-200 cursor-pointer ${
-            activeTab === 'moodboard'
-              ? 'text-brand-primary border-b-2 border-brand-primary pb-1'
-              : 'text-brand-charcoal/60 hover:text-brand-primary'
-          }`}
-        >
-          Moodboard
-        </button>
       </nav>
 
       {/* Utilities */}

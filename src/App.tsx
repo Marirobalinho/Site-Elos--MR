@@ -10,7 +10,6 @@ import LeaderProfile from './components/LeaderProfile';
 import ConnectionFlow from './components/ConnectionFlow';
 import ImpactReports from './components/ImpactReports';
 import SettingsPanel from './components/SettingsPanel';
-import Moodboard from './components/Moodboard';
 import { STAKEHOLDERS } from './data';
 import { Compass, Users, MapPin, Sparkles } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
@@ -183,10 +182,6 @@ export default function App() {
 
             {activeTab === 'settings' && (
               <SettingsPanel />
-            )}
-
-            {activeTab === 'moodboard' && (
-              <Moodboard />
             )}
           </motion.div>
         </AnimatePresence>
