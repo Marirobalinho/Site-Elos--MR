@@ -5,32 +5,26 @@
 
 import { useEffect, useState } from 'react';
 import { Save, Plus, ArrowUpRight, ToggleLeft, ToggleRight, ShieldAlert, Sparkles, User, Briefcase, Mail, Building, Globe, Check } from 'lucide-react';
+import { supabase } from '../lib/supabaseClient';
+import { getOrCreateUserProfile, updateUserProfile } from '../lib/profileService';
 
 interface SettingsPanelProps {
   userEmail?: string;
+  userId?: string;
 }
 
-export default function SettingsPanel({ userEmail }: SettingsPanelProps) {
+export default function SettingsPanel({ userEmail, userId }: SettingsPanelProps) {
   // User Profile State (Self-management)
-  const [userName, setUserName] = useState<string>('Ana Ferreira');
-  const [userTitle, setUserTitle] = useState<string>('Coordenadora de Articulação e Impacto');
-  const [userEmailState, setUserEmail] = useState<string>(userEmail ?? 'ana.ferreira@eloslocais.com.br');
+  const [userName, setUserName] = useState<string>('');
+  const [userTitle, setUserTitle] = useState<string>('');
+  const [userEmailState, setUserEmail] = useState<string>(userEmail ?? '');
 
-  useEffect(() => {
-    if (userEmail) {
-      setUserEmail(userEmail);
-    }
-  }, [userEmail]);
-  const [userBio, setUserBio] = useState<string>(
-    'Dedicada ao mapeamento ético e fomento de parcerias com povos originários, comunidades ribeirinhas e caiçaras, assegurando a soberania de dados e o tempo sagrado de cada território.'
-  );
+  const [userBio, setUserBio] = useState<string>('');
 
   // Corporate Profile State
-  const [companyName, setCompanyName] = useState<string>('Elos Locais');
-  const [website, setWebsite] = useState<string>('https://eloslocais.com.br');
-  const [companyDesc, setCompanyDesc] = useState<string>(
-    'Elos Locais conecta projetos de infraestrutura e bioeconomia de impacto a comunidades tradicionais remotas, promovendo parcerias responsáveis, justas e transparentes.'
-  );
+  const [companyName, setCompanyName] = useState<string>('');
+  const [website, setWebsite] = useState<string>('');
+  const [companyDesc, setCompanyDesc] = useState<string>('');
 
   // Dynamic Toggles for advanced features
   const [toggles, setToggles] = useState<Record<string, boolean>>({
@@ -42,19 +36,89 @@ export default function SettingsPanel({ userEmail }: SettingsPanelProps) {
 
   const [saving, setSaving] = useState<boolean>(false);
   const [saveSuccess, setSaveSuccess] = useState<boolean>(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+
+  // Carrega o perfil do Supabase ao montar o componente
+  useEffect(() => {
+    const loadProfile = async () => {
+      try {
+        if (!userId && userEmail) {
+          // Obtém o ID do usuário a partir da sessão
+          const { data: { user } } = await supabase.auth.getUser();
+          if (user) {
+            await loadUserProfileData(user.id);
+          }
+        } else if (userId) {
+          await loadUserProfileData(userId);
+        }
+      } catch (error) {
+        console.error('Erro ao carregar perfil:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadProfile();
+  }, [userId, userEmail]);
+
+  const loadUserProfileData = async (id: string) => {
+    try {
+      const profile = await getOrCreateUserProfile(id, userEmail || '');
+      if (profile) {
+        setUserName(profile.name);
+        setUserTitle(profile.title);
+        setUserEmail(profile.email);
+        setUserBio(profile.bio);
+        setCompanyName(profile.company_name);
+        setWebsite(profile.website);
+        setCompanyDesc(profile.company_desc);
+      }
+    } catch (error) {
+      console.error('Erro ao carregar perfil:', error);
+    }
+  };
 
   const handleToggle = (key: string) => {
     setToggles({ ...toggles, [key]: !toggles[key] });
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     setSaving(true);
+    setSaveError(null);
     setSaveSuccess(false);
-    setTimeout(() => {
+
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) {
+        setSaveError('Usuário não encontrado. Faça login novamente.');
+        setSaving(false);
+        return;
+      }
+
+      const result = await updateUserProfile(user.id, {
+        name: userName,
+        title: userTitle,
+        email: userEmailState,
+        bio: userBio,
+        company_name: companyName,
+        website: website,
+        company_desc: companyDesc,
+      });
+
+      if (result) {
+        setSaveSuccess(true);
+        setTimeout(() => setSaveSuccess(false), 3000);
+      } else {
+        setSaveError('Erro ao salvar alterações. Tente novamente.');
+      }
+    } catch (error) {
+      console.error('Erro ao salvar perfil:', error);
+      setSaveError('Erro ao salvar alterações. Tente novamente.');
+    } finally {
       setSaving(false);
-      setSaveSuccess(true);
-      setTimeout(() => setSaveSuccess(false), 3000);
-    }, 1000);
+    }
   };
 
   // Extract Initials for User Avatar
@@ -219,6 +283,14 @@ export default function SettingsPanel({ userEmail }: SettingsPanelProps) {
                     <Check className="h-3 w-3" />
                   </span>
                   <span>Configurações salvas com sucesso!</span>
+                </span>
+              )}
+              {saveError && (
+                <span className="text-xs text-red-600 font-bold flex items-center space-x-1 animate-fade-in">
+                  <span className="bg-red-100 p-1 rounded-full text-red-600">
+                    <ShieldAlert className="h-3 w-3" />
+                  </span>
+                  <span>{saveError}</span>
                 </span>
               )}
               <button 
