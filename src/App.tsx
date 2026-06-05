@@ -3,7 +3,10 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import type { Session } from '@supabase/supabase-js';
+import { supabase } from './lib/supabaseClient';
+import Login from './components/Login';
 import Header from './components/Header';
 import LandingPage from './components/LandingPage';
 import LeaderProfile from './components/LeaderProfile';
@@ -15,9 +18,28 @@ import { Compass, Users, MapPin, Sparkles } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
 export default function App() {
+  const [session, setSession] = useState<Session | null>(null);
   const [activeTab, setActiveTab] = useState<string>('explore');
   const [selectedLeaderId, setSelectedLeaderId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>('');
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => {
+      setSession(data.session);
+    });
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  if (!session) {
+    return <Login />;
+  }
 
   // Find the currently selected leader object
   const currentLeader = STAKEHOLDERS.find((leader) => leader.id === selectedLeaderId) || STAKEHOLDERS[0];
@@ -45,6 +67,10 @@ export default function App() {
         onSelectLeader={handleSelectLeader}
         onSearch={setSearchQuery}
         searchQuery={searchQuery}
+        userEmail={session.user.email ?? ''}
+        onSignOut={async () => {
+          await supabase.auth.signOut();
+        }}
       />
 
       {/* Main Content Area with Route Transitions */}

@@ -11,9 +11,11 @@ interface HeaderProps {
   onSelectLeader: (id: string | null) => void;
   onSearch: (query: string) => void;
   searchQuery: string;
+  userEmail?: string;
+  onSignOut?: () => void;
 }
 
-export default function Header({ activeTab, setActiveTab, onSelectLeader, onSearch, searchQuery }: HeaderProps) {
+export default function Header({ activeTab, setActiveTab, onSelectLeader, onSearch, searchQuery, userEmail, onSignOut }: HeaderProps) {
   return (
     <header className="sticky top-0 z-50 bg-[#f9faf2] border-b border-brand-outline px-6 py-4 flex items-center justify-between">
       {/* Brand logo & Slogan */}
@@ -99,6 +101,18 @@ export default function Header({ activeTab, setActiveTab, onSelectLeader, onSear
         <button className="p-2 text-brand-charcoal/70 hover:text-brand-primary hover:bg-brand-background/60 rounded-full transition-all">
           <HelpCircle className="h-5 w-5" />
         </button>
+
+        {userEmail && onSignOut ? (
+          <div className="hidden sm:flex items-center gap-3">
+            <span className="text-xs text-brand-charcoal/70 truncate max-w-[160px]">{userEmail}</span>
+            <button
+              onClick={onSignOut}
+              className="text-xs font-bold text-brand-primary hover:underline"
+            >
+              Sair
+            </button>
+          </div>
+        ) : null}
 
         {/* Profile Avatar Monogram / Quick click to Settings */}
         <button 
